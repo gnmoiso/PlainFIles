@@ -1,47 +1,62 @@
-﻿using PlainFIles;
-using System.ComponentModel.Design;
+﻿using PlainFIles.Core;
 
-var textFIle = new SimpleTextFile("data.txt");
-var lines = textFIle.ReadAllLines().ToList();
-var opc = string.Empty;
+Console.Write("Digite el nombre de la lista: ");
+var listName = Console.ReadLine();
+var manualCsv = new ManualCsvHelper();
+var people = manualCsv.ReadCsv($"{listName}.csv");
+var option = string.Empty;
 
 do
 {
-    opc = Menu();
-    switch (opc)
+    option = MyMenu();
+    switch(option)
     {
         case "1":
-            Console.WriteLine("Contenido del archivo:");
-            foreach (var line in lines)
-            {
-                Console.WriteLine(line);
-            }
+            Console.Write("Digite el nombre: ");
+            var name = Console.ReadLine();
+            Console.Write("Digite el apellido: ");
+            var lastName = Console.ReadLine();
+            Console.Write("Digite la edad: ");
+            var age = Console.ReadLine();
+            people.Add(new string[] { name ?? string.Empty, lastName ?? string.Empty, age ?? string.Empty });
             break;
         case "2":
-            Console.Write("Ingrese la linea a agregar: ");
-            var newLine = Console.ReadLine() ?? string.Empty;
-            lines.Add(newLine);
+            Console.WriteLine("Lista de personas:");
+            Console.WriteLine("Nombres|Apellido|Edad");
+            foreach (var person in people)
+            {
+                Console.WriteLine($"Nombre: {person[0]}|Apellido: {person[1]}|Edad: {person[2]}");
+            }
             break;
         case "3":
-            textFIle.WritteAllLines(lines);
-            Console.WriteLine("Archivo guardado.");
+            SavedFile(people, listName);
+            Console.WriteLine("Archivo guardado correctamente.");
             break;
         case "0":
-            textFIle.WritteAllLines(lines);
-            Console.WriteLine("Saliendo...");
+            Console.WriteLine("Saliendo del programa...");
             break;
         default:
-            Console.WriteLine("Opcion no valida.");
+            Console.WriteLine("Opción no válida. Intente de nuevo.");
             break;
     }
-} while (opc != "0");
 
-string Menu()
+
+} while (option != "0");
+
+string MyMenu()
 {
-    Console.WriteLine("1. Mostrar");
-    Console.WriteLine("2. Adicionar");
-    Console.WriteLine("3. Guardar");
-    Console.WriteLine("0. Sair");
-    Console.Write("su opcion es: ");
+    Console.WriteLine("Seleccione una opción:");
+    Console.WriteLine("1. Adicionar");
+    Console.WriteLine("2. Mostrar");
+    Console.WriteLine("3. Grabar");
+    Console.WriteLine("0. Salir");
+    Console.Write("Seleccione una Opción: ");
     return Console.ReadLine() ?? string.Empty;
+}
+
+SavedFile(people, listName);
+
+void SavedFile(List<string[]> people, string? listName)
+{
+    manualCsv.WriteCsv($"{listName}.csv", people);
 }
